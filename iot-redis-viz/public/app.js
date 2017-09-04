@@ -1,7 +1,9 @@
 //-- author: david.maier@redislabs.com
 
-//Cache items
+//Local cache
 var cache = {};
+
+//Set of all MAC addresses
 var macs = {};
 
 //Helpers
@@ -76,8 +78,16 @@ myApp.controller('ValuesController', [ '$scope', '$window', function ValuesContr
 		cache[mac][count] = last;
 
 		count = count + 1;
-		if (count == cache[mac].length-1) count = 0;
-			
+		//Round Robin
+		//if (count == cache[mac].length-1) count = 0;
+		
+		//Shifting
+		if (count == cache[mac].length-1) {
+		
+			cache[mac].shift();
+			cache[mac].push("");
+			count = count - 1;
+		}
 
 		cache['count::' + mac] = count;
 
@@ -93,7 +103,7 @@ myApp.controller('ValuesController', [ '$scope', '$window', function ValuesContr
 		var values = cache[mac];
 
 		for (var i in values) {
-  			chart_data.push([ i, parseInt(values[i])]);
+  			chart_data.push([ i , parseInt(values[i])]);
 		}			
 		
 
@@ -108,7 +118,7 @@ myApp.controller('ValuesController', [ '$scope', '$window', function ValuesContr
       		};
       		
 		var chart = new $window.google.visualization.LineChart(document.getElementById(mac));
-      		//Draw dependent on property 'hidden'
+      		//TODO: Draw dependent on property 'hidden'
 		chart.draw(data, options);
   	});
 }]);
