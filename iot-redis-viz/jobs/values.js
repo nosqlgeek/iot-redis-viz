@@ -1,5 +1,9 @@
-const macs = [ "f4:0f:24:0e:93:ca", "f4:0f:24:0e:93:cb", "f4:0f:24:0e:93:cz" ];
-const names = [ "francois", "david", "gabe" ];
+var schedule = require('node-schedule');
+var rule = new schedule.RecurrenceRule();
+rule.second = new schedule.Range(0, 59, 1);
+
+const MACS = [ "a4:0f:24:0e:93:ca", "b4:0f:24:0e:93:cb", "c4:0f:24:0e:93:cz" ];
+const NAMES = [ "francois", "david", "gabe" ];
 
 var self;
 
@@ -20,23 +24,23 @@ function _getRandomInt(min, max) {
 
 function _run() {
 
-	while (true) {
+	schedule.scheduleJob(rule, function() {
 	
 		var details = {};
 
-		var entry = _getRandomInt(0,2);
+		var entry = _getRandomInt(0,3);
 		var value = _getRandomInt(1, 1000) + "";
 
-		details.macaddr = macs[entry];
-		details.screenname = names[entry];
+		details.macaddr = MACS[entry];
+		details.screenname = NAMES[entry];
 		details.values = [];
 		details.values.push(value);
 
 		console.log(JSON.stringify(details));
 
-		this.socket.emit('update', details);
+		self.socket.emit('update', details);
 
-	}
+	});
 }
 
 module.exports = {
