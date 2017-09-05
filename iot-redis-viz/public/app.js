@@ -109,11 +109,9 @@ myApp.controller('ValuesController', [ '$scope', '$window', function ValuesContr
 
 		//Draw chart
 		var data = google.visualization.arrayToDataTable(chart_data);
-      		
-		var color = 'red'
 
 		var options = {
-			colors: [color],
+			colors: ['red'],
         		title: 'Last 100 items'
       		};
       		
