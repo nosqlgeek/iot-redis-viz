@@ -25,20 +25,26 @@ function _getRandomInt(min, max) {
 function _run() {
 
 	schedule.scheduleJob(rule, function() {
-	
-		var details = {};
 
-		var entry = _getRandomInt(0,3);
-		var value = _getRandomInt(1, 1000) + "";
+		//Mimic an issue that too many values are emitted per second (1000 values/sec)
+		for (var i = 0; i<100; i++) {
 
-		details.macaddr = MACS[entry];
-		details.screenname = NAMES[entry];
-		details.values = [];
-		details.values.push(value);
+            var details = {};
 
-		console.log(JSON.stringify(details));
+            var entry = _getRandomInt(0, 3);
+            var value = _getRandomInt(1, 1000) + "";
 
-		self.socket.emit('update', details);
+
+            details.macaddr = MACS[entry];
+            details.screenname = NAMES[entry];
+            details.values = [];
+            details.values.push(value);
+
+            console.log(JSON.stringify(details));
+
+            self.socket.emit('update', details);
+
+        }
 
 	});
 }
