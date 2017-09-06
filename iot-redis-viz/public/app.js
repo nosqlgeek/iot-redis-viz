@@ -54,6 +54,7 @@ myApp.controller('ValuesController', [ '$scope', '$window', function ValuesContr
 	var socket = $window.io.connect('http://localhost:3000');
 
 	socket.on('update', function (data) {
+<<<<<<< HEAD
 
 		//Log client side
         //console.log(data);
@@ -142,6 +143,79 @@ myApp.controller('ValuesController', [ '$scope', '$window', function ValuesContr
         $scope.items = cache;
         $scope.macs = Object.values(macs);
         $scope.$apply();
+=======
+    	
+		console.log(data);
+
+		var mac = data.macaddr;
+
+		//Mimic a set
+		macs[mac] = mac;		
+
+
+		//Init Cache
+		if ( !_isDefined(cache[mac] )) {
+			cache[mac] = _initArr(100);
+			cache['count::' + mac] = 0;
+			cache['last::' + mac] = "";
+			
+			if (_isDefined(data.screenname)) {
+			  cache['name::' + mac] = data.screenname;
+			}
+			else {
+			  cache['name::' + mac] = mac;
+			}
+		}
+		
+		//Cache the last 100 items
+		last = data.values[0];
+		var count = cache['count::' + mac];
+		
+		cache['last::' + mac] = last;
+		cache[mac][count] = last;
+
+		count = count + 1;
+		//Round Robin
+		//if (count == cache[mac].length-1) count = 0;
+		
+		//Shifting
+		if (count == cache[mac].length-1) {
+		
+			cache[mac].shift();
+			cache[mac].push("");
+			count = count - 1;
+		}
+
+		cache['count::' + mac] = count;
+
+		//Set the model
+		$scope.items = cache;
+		$scope.macs = Object.values(macs);
+		$scope.$apply();
+		
+
+		//Data to draw
+		var chart_data = [];
+		chart_data.push(['Item', 'Value']);
+		var values = cache[mac];
+
+		for (var i in values) {
+  			chart_data.push([ i , parseInt(values[i])]);
+		}			
+		
+
+		//Draw chart
+		var data = google.visualization.arrayToDataTable(chart_data);
+
+		var options = {
+			colors: ['red'],
+        		title: 'Last 100 items'
+      		};
+      		
+		var chart = new $window.google.visualization.LineChart(document.getElementById(mac));
+      		//TODO: Draw dependent on property 'hidden'
+		chart.draw(data, options);
+>>>>>>> a521c338d4955ca4e1d008b76183a4603400bf4f
   	});
 }]);
 
